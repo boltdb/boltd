@@ -1,0 +1,16 @@
+<%! func Error(w io.Writer, err error) error %>
+
+<!DOCTYPE html>
+<html lang="en">
+  <% head(w) %>
+
+  <body class="error">
+    <div class="container">
+      <div class="header">
+        <h3 class="text-muted">Error</h3>
+      </div>
+
+      An error has occurred: <%= err %>
+    </div> <!-- /container -->
+  </body>
+</html>
