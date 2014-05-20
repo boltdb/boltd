@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/benbjohnson/boltd"
 	"github.com/boltdb/bolt"
+	"github.com/boltdb/boltd"
 )
 
 func main() {

@@ -12,7 +12,7 @@ To install boltd, use the `go get` command:
 
 ```sh
 $ go get github.com/boltdb/boltd/...
-``
+```
 
 And then run the `boltd` binary by passing in the path to your database:
 

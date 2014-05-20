@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/benbjohnson/boltd/assets"
-	"github.com/benbjohnson/boltd/templates"
 	"github.com/boltdb/bolt"
+	"github.com/boltdb/boltd/assets"
+	"github.com/boltdb/boltd/templates"
 	"github.com/gorilla/mux"
 )
 
