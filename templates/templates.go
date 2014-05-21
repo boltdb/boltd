@@ -86,7 +86,7 @@ func pagelink(indexes []int) string {
 	for _, index := range indexes[1:] {
 		a = append(a, strconv.Itoa(index))
 	}
-	return "/page?index=" + strings.Join(a, ":")
+	return "page?index=" + strings.Join(a, ":")
 }
 
 func subpagelink(indexes []int, index int) string {
