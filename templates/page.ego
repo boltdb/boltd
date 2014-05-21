@@ -1,0 +1,81 @@
+<%! func Page(w io.Writer, tx *bolt.Tx, indexes []int) error %>
+
+<%% import "unsafe" %%>
+<%% import "github.com/boltdb/bolt" %%>
+
+<%
+ids, err := pgids(tx, indexes)
+if err != nil {
+  return err
+}
+p := pageAt(tx, ids[len(ids)-1])
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+  <% head(w, tx) %>
+
+  <body>
+    <% nav(w, tx) %>
+
+    <h2>
+      <% for i, id := range ids { %>
+        <% if i > 0 { %>&raquo;<% } %>
+        <a href="<%= pagelink(indexes[:i+1]) %>">#<%= id %></a>
+      <% } %>
+    </h2>
+
+    <h3>Page Information</h3>
+    <p>
+      <strong>ID:</strong> <%= p.id %><br/>
+      <strong>Type:</strong> <%= fmt.Sprintf("%s (%x)", p.typ(), p.flags) %><br/>
+      <strong>Overflow:</strong> <%= p.overflow %><br/>
+    </p>
+
+    <% if (p.flags & branchPageFlag) != 0 { %>
+      <h3>Branch Elements (<%= p.count %>)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th align="left">Key</th>
+            <th align="left">Page ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for i := uint16(0); i < p.count; i++ { %>
+            <% e := p.branchPageElement(i) %>
+            <tr>
+              <td><%= trunc(tostr(e.key()), 40) %></td>
+              <td><%= e.pgid %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    
+    <% } else if (p.flags & leafPageFlag) != 0 { %>
+      <h3>Leaf Elements (<%= p.count %>)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th align="left">Key</th>
+            <th align="left">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for i := uint16(0); i < p.count; i++ { %>
+            <% e := p.leafPageElement(i) %>
+            <% if (e.flags & bucketLeafFlag) != 0 { %>
+              <% b := ((*bucket)(unsafe.Pointer(&e.value()[0]))) %>
+              <tr>
+                <td><strong><%= trunc(tostr(e.key()), 40) %></strong></td>
+                <td>
+                  &lt;bucket(root=<% if b.root != 0 { %><a href="<%= subpagelink(indexes, int(i)) %>"><% } %><%= b.root %><% if b.root != 0 { %></a><% } %>; seq=<%= b.sequence %>&gt;
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
+        </tbody>
+      </table>
+    <% } %>
+  </body>
+</html>

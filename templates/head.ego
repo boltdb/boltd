@@ -6,4 +6,19 @@
 <head>
   <meta charset="utf-8">
   <title><%= filepath.Base(tx.DB().Path()) %></title>
+
+  <style>
+    table {
+      border-collapse:collapse;
+    }
+    
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td { 
+      min-width: 200px;
+      padding: 2px 5px;
+    }
+  </style>
 </head>

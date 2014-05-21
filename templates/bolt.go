@@ -4,6 +4,7 @@ package templates
 // bolt database files.
 
 import (
+	"fmt"
 	"unsafe"
 )
 
@@ -34,6 +35,20 @@ type page struct {
 	count    uint16
 	overflow uint32
 	ptr      uintptr
+}
+
+// typ returns a human readable page type string used for debugging.
+func (p *page) typ() string {
+	if (p.flags & branchPageFlag) != 0 {
+		return "branch"
+	} else if (p.flags & leafPageFlag) != 0 {
+		return "leaf"
+	} else if (p.flags & metaPageFlag) != 0 {
+		return "meta"
+	} else if (p.flags & freelistPageFlag) != 0 {
+		return "freelist"
+	}
+	return fmt.Sprintf("unknown<%02x>", p.flags)
 }
 
 func (p *page) meta() *meta {
