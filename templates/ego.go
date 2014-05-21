@@ -142,6 +142,47 @@ func head(w io.Writer, tx *bolt.Tx) error {
 	return nil
 }
 
+//line index.ego:1
+func Index(w io.Writer) error {
+//line index.ego:2
+	if _, err := fmt.Fprintf(w, "\n\n"); err != nil {
+		return err
+	}
+//line index.ego:3
+	if _, err := fmt.Fprintf(w, "<!DOCTYPE html>\n"); err != nil {
+		return err
+	}
+//line index.ego:4
+	if _, err := fmt.Fprintf(w, "<html lang=\"en\">\n  "); err != nil {
+		return err
+	}
+//line index.ego:5
+	if _, err := fmt.Fprintf(w, "<head>\n    "); err != nil {
+		return err
+	}
+//line index.ego:6
+	if _, err := fmt.Fprintf(w, "<meta http-equiv=\"refresh\" content=\"0; url=page\">\n  "); err != nil {
+		return err
+	}
+//line index.ego:7
+	if _, err := fmt.Fprintf(w, "</head>\n\n  "); err != nil {
+		return err
+	}
+//line index.ego:9
+	if _, err := fmt.Fprintf(w, "<body>redirecting..."); err != nil {
+		return err
+	}
+//line index.ego:9
+	if _, err := fmt.Fprintf(w, "</body>\n"); err != nil {
+		return err
+	}
+//line index.ego:10
+	if _, err := fmt.Fprintf(w, "</html>\n"); err != nil {
+		return err
+	}
+	return nil
+}
+
 //line nav.ego:1
 func nav(w io.Writer, tx *bolt.Tx) error {
 //line nav.ego:2

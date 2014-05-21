@@ -23,7 +23,7 @@ type handler struct {
 }
 
 func (h *handler) index(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "page", http.StatusFound)
+	templates.Index(w)
 }
 
 func (h *handler) page(w http.ResponseWriter, r *http.Request) {
