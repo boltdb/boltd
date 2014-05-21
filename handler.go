@@ -7,16 +7,15 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/boltdb/boltd/templates"
-	"github.com/gorilla/mux"
 )
 
 // NewHandler returns a new root HTTP handler.
 func NewHandler(db *bolt.DB) http.Handler {
 	h := &handler{db}
-	r := mux.NewRouter()
-	r.HandleFunc("/", h.index)
-	r.HandleFunc("/page", h.page)
-	return r
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", h.index)
+	mux.HandleFunc("/page", h.page)
+	return mux
 }
 
 type handler struct {
