@@ -2,7 +2,10 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <% head(w) %>
+  <head>
+    <meta charset="utf-8">
+    <title>boltd</title>
+  </head>
 
   <body class="error">
     <div class="container">

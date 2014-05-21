@@ -1,11 +1,6 @@
-<%! func nav(w io.Writer, tx *bolt.Tx, section string) error %>
+<%! func nav(w io.Writer, tx *bolt.Tx) error %>
 
-<%% import "github.com/boltdb/bolt" %%>
 <%% import "path/filepath" %%>
+<%% import "github.com/boltdb/bolt" %%>
 
-<div class="header">
-  <ul class="nav nav-pills pull-right">
-    <li <% if section == "explorer" {%>class="active"<% } %>><a href="/">Explorer</a></li>
-  </ul>
-  <h3 class="text-muted"><%= filepath.Base(tx.DB().Path()) %></h3>
-</div>
+<h1><%= filepath.Base(tx.DB().Path()) %></h1>

@@ -5,10 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"path"
 
 	"github.com/boltdb/bolt"
-	"github.com/boltdb/boltd/assets"
 	"github.com/boltdb/boltd/templates"
 	"github.com/gorilla/mux"
 )
@@ -22,7 +20,6 @@ func NewHandler(db *bolt.DB) http.Handler {
 	h := &handler{db}
 	r := mux.NewRouter()
 	r.HandleFunc("/", h.index)
-	r.HandleFunc("/assets/{filename}", h.assets)
 	r.HandleFunc("/bucket", h.bucket)
 	return r
 }
@@ -35,23 +32,6 @@ func (h *handler) index(w http.ResponseWriter, r *http.Request) {
 	h.db.View(func(tx *bolt.Tx) error {
 		return templates.Index(w, tx)
 	})
-}
-
-func (h *handler) assets(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	filename := vars["filename"]
-	b, err := assets.Asset(filename)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	switch path.Ext(filename) {
-	case ".css":
-		w.Header().Set("Content-Type", "text/css")
-	case ".js":
-		w.Header().Set("Content-Type", "application/javascript")
-	}
-	w.Write(b)
 }
 
 func (h *handler) bucket(w http.ResponseWriter, r *http.Request) {

@@ -4,17 +4,17 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <% head(w) %>
+  <% head(w, tx) %>
 
   <body class="bucket">
     <div class="container">
-      <% nav(w, tx, "explorer") %>
+      <% nav(w, tx) %>
 
       <table class="table">
         <thead>
           <tr>
-            <th>Key</th>
-            <th>Value</th>
+            <th align="left">Key</th>
+            <th align="left">Value</th>
           </tr>
         </thead>
         <tbody>

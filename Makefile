@@ -1,17 +1,11 @@
 default: build
 
-assets: assets/bindata.go
-
-# go get github.com/jteeuwen/go-bindata/...
-assets/bindata.go: assets/*.css assets/*.js
-	@cd assets && go-bindata -pkg=assets -ignore=bindata.go .
-
-build: assets ego
+build: templates
 	mkdir -p bin
 	go build -o bin/boltd ./cmd/boltd
 
 # go get github.com/benbjohnson/ego/...
-ego:
+templates:
 	@ego .
 
-.PHONY: assets
+.PHONY: templates
