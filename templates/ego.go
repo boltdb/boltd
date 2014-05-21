@@ -128,7 +128,7 @@ func head(w io.Writer, tx *bolt.Tx) error {
 		return err
 	}
 //line head.ego:10
-	if _, err := fmt.Fprintf(w, "<style>\n    table {\n      border-collapse:collapse;\n    }\n    \n    table, th, td {\n      border: 1px solid black;\n    }\n\n    th, td { \n      min-width: 200px;\n      padding: 2px 5px;\n    }\n  "); err != nil {
+	if _, err := fmt.Fprintf(w, "<style>\n    table {\n      border-collapse:collapse;\n    }\n    \n    table, th, td {\n      border: 1px solid black;\n    }\n\n    th, td { \n      min-width: 100px;\n      padding: 2px 5px;\n    }\n  "); err != nil {
 		return err
 	}
 //line head.ego:23
@@ -424,272 +424,394 @@ func Page(w io.Writer, tx *bolt.Tx, indexes []int) error {
 			return err
 		}
 //line page.ego:42
-		if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
-			return err
-		}
-//line page.ego:43
-		if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
-			return err
-		}
-//line page.ego:44
-		if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
-			return err
-		}
-//line page.ego:45
-		if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
-			return err
-		}
-//line page.ego:46
-		for i := uint16(0); i < p.count; i++ {
-//line page.ego:47
-			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
-				return err
-			}
-//line page.ego:47
-			e := p.branchPageElement(i)
-//line page.ego:48
-			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
-				return err
-			}
-//line page.ego:48
-			if _, err := fmt.Fprintf(w, "<tr>\n              "); err != nil {
-				return err
-			}
-//line page.ego:49
-			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-				return err
-			}
-//line page.ego:49
-			if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.key()), 40)); err != nil {
-				return err
-			}
-//line page.ego:49
-			if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
-				return err
-			}
-//line page.ego:50
-			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-				return err
-			}
-//line page.ego:50
-			if _, err := fmt.Fprintf(w, "%v", e.pgid); err != nil {
-				return err
-			}
-//line page.ego:50
-			if _, err := fmt.Fprintf(w, "</td>\n            "); err != nil {
-				return err
-			}
-//line page.ego:51
-			if _, err := fmt.Fprintf(w, "</tr>\n          "); err != nil {
-				return err
-			}
-//line page.ego:52
-		}
-//line page.ego:53
-		if _, err := fmt.Fprintf(w, "\n        "); err != nil {
-			return err
-		}
-//line page.ego:53
-		if _, err := fmt.Fprintf(w, "</tbody>\n      "); err != nil {
-			return err
-		}
-//line page.ego:54
-		if _, err := fmt.Fprintf(w, "</table>\n    \n    "); err != nil {
-			return err
-		}
-//line page.ego:56
-	} else if (p.flags & leafPageFlag) != 0 {
-//line page.ego:57
-		if _, err := fmt.Fprintf(w, "\n      "); err != nil {
-			return err
-		}
-//line page.ego:57
-		if _, err := fmt.Fprintf(w, "<h3>Leaf Elements ("); err != nil {
-			return err
-		}
-//line page.ego:57
-		if _, err := fmt.Fprintf(w, "%v", p.count); err != nil {
-			return err
-		}
-//line page.ego:57
-		if _, err := fmt.Fprintf(w, ")"); err != nil {
-			return err
-		}
-//line page.ego:57
-		if _, err := fmt.Fprintf(w, "</h3>\n      "); err != nil {
-			return err
-		}
-//line page.ego:58
-		if _, err := fmt.Fprintf(w, "<table>\n        "); err != nil {
-			return err
-		}
-//line page.ego:59
-		if _, err := fmt.Fprintf(w, "<thead>\n          "); err != nil {
-			return err
-		}
-//line page.ego:60
-		if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
-			return err
-		}
-//line page.ego:61
-		if _, err := fmt.Fprintf(w, "<th align=\"left\">Key"); err != nil {
-			return err
-		}
-//line page.ego:61
 		if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
 			return err
 		}
-//line page.ego:62
-		if _, err := fmt.Fprintf(w, "<th align=\"left\">Value"); err != nil {
+//line page.ego:43
+		if _, err := fmt.Fprintf(w, "<th align=\"left\">Size (k)"); err != nil {
 			return err
 		}
-//line page.ego:62
+//line page.ego:43
 		if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
 			return err
 		}
-//line page.ego:63
+//line page.ego:44
 		if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
 			return err
 		}
-//line page.ego:64
+//line page.ego:45
 		if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
 			return err
 		}
-//line page.ego:65
+//line page.ego:46
 		if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
 			return err
 		}
-//line page.ego:66
+//line page.ego:47
 		for i := uint16(0); i < p.count; i++ {
-//line page.ego:67
+//line page.ego:48
 			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
 				return err
 			}
-//line page.ego:67
-			e := p.leafPageElement(i)
-//line page.ego:68
+//line page.ego:48
+			e := p.branchPageElement(i)
+//line page.ego:49
 			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
 				return err
 			}
-//line page.ego:68
-			if (e.flags & bucketLeafFlag) != 0 {
-//line page.ego:69
-				if _, err := fmt.Fprintf(w, "\n              "); err != nil {
-					return err
-				}
-//line page.ego:69
-				b := ((*bucket)(unsafe.Pointer(&e.value()[0])))
-//line page.ego:70
-				if _, err := fmt.Fprintf(w, "\n              "); err != nil {
-					return err
-				}
-//line page.ego:70
-				if _, err := fmt.Fprintf(w, "<tr>\n                "); err != nil {
-					return err
-				}
-//line page.ego:71
-				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-					return err
-				}
-//line page.ego:71
-				if _, err := fmt.Fprintf(w, "<strong>"); err != nil {
-					return err
-				}
-//line page.ego:71
-				if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.key()), 40)); err != nil {
-					return err
-				}
-//line page.ego:71
-				if _, err := fmt.Fprintf(w, "</strong>"); err != nil {
-					return err
-				}
-//line page.ego:71
-				if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
-					return err
-				}
-//line page.ego:72
-				if _, err := fmt.Fprintf(w, "<td>\n                  &lt;bucket(root="); err != nil {
-					return err
-				}
-//line page.ego:73
-				if b.root != 0 {
-//line page.ego:73
-					if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
-						return err
-					}
-//line page.ego:73
-					if _, err := fmt.Fprintf(w, "%v", subpagelink(indexes, int(i))); err != nil {
-						return err
-					}
-//line page.ego:73
-					if _, err := fmt.Fprintf(w, "\">"); err != nil {
-						return err
-					}
-//line page.ego:73
-				}
-//line page.ego:73
-				if _, err := fmt.Fprintf(w, "%v", b.root); err != nil {
-					return err
-				}
-//line page.ego:73
-				if b.root != 0 {
-//line page.ego:73
-					if _, err := fmt.Fprintf(w, "</a>"); err != nil {
-						return err
-					}
-//line page.ego:73
-				}
-//line page.ego:73
-				if _, err := fmt.Fprintf(w, "; seq="); err != nil {
-					return err
-				}
-//line page.ego:73
-				if _, err := fmt.Fprintf(w, "%v", b.sequence); err != nil {
-					return err
-				}
-//line page.ego:73
-				if _, err := fmt.Fprintf(w, "&gt;\n                "); err != nil {
-					return err
-				}
-//line page.ego:74
-				if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
-					return err
-				}
-//line page.ego:75
-				if _, err := fmt.Fprintf(w, "</tr>\n            "); err != nil {
-					return err
-				}
-//line page.ego:76
-			}
-//line page.ego:77
-			if _, err := fmt.Fprintf(w, "\n          "); err != nil {
+//line page.ego:49
+			if _, err := fmt.Fprintf(w, "<tr>\n              "); err != nil {
 				return err
 			}
-//line page.ego:77
+//line page.ego:50
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:50
+			if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.key()), 40)); err != nil {
+				return err
+			}
+//line page.ego:50
+			if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "%v", subpagelink(indexes, int(i))); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "\">"); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "%v", e.pgid); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "</a>"); err != nil {
+				return err
+			}
+//line page.ego:51
+			if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
+				return err
+			}
+//line page.ego:52
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:52
+			if _, err := fmt.Fprintf(w, "%v", len(e.key())); err != nil {
+				return err
+			}
+//line page.ego:52
+			if _, err := fmt.Fprintf(w, "</td>\n            "); err != nil {
+				return err
+			}
+//line page.ego:53
+			if _, err := fmt.Fprintf(w, "</tr>\n          "); err != nil {
+				return err
+			}
+//line page.ego:54
 		}
-//line page.ego:78
+//line page.ego:55
 		if _, err := fmt.Fprintf(w, "\n        "); err != nil {
 			return err
 		}
-//line page.ego:78
+//line page.ego:55
 		if _, err := fmt.Fprintf(w, "</tbody>\n      "); err != nil {
 			return err
 		}
+//line page.ego:56
+		if _, err := fmt.Fprintf(w, "</table>\n    \n    "); err != nil {
+			return err
+		}
+//line page.ego:58
+	} else if (p.flags & leafPageFlag) != 0 {
+//line page.ego:59
+		if _, err := fmt.Fprintf(w, "\n      "); err != nil {
+			return err
+		}
+//line page.ego:59
+		if _, err := fmt.Fprintf(w, "<h3>Leaf Elements ("); err != nil {
+			return err
+		}
+//line page.ego:59
+		if _, err := fmt.Fprintf(w, "%v", p.count); err != nil {
+			return err
+		}
+//line page.ego:59
+		if _, err := fmt.Fprintf(w, ")"); err != nil {
+			return err
+		}
+//line page.ego:59
+		if _, err := fmt.Fprintf(w, "</h3>\n      "); err != nil {
+			return err
+		}
+//line page.ego:60
+		if _, err := fmt.Fprintf(w, "<table>\n        "); err != nil {
+			return err
+		}
+//line page.ego:61
+		if _, err := fmt.Fprintf(w, "<thead>\n          "); err != nil {
+			return err
+		}
+//line page.ego:62
+		if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
+			return err
+		}
+//line page.ego:63
+		if _, err := fmt.Fprintf(w, "<th align=\"left\">Key"); err != nil {
+			return err
+		}
+//line page.ego:63
+		if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
+			return err
+		}
+//line page.ego:64
+		if _, err := fmt.Fprintf(w, "<th align=\"left\">Value"); err != nil {
+			return err
+		}
+//line page.ego:64
+		if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
+			return err
+		}
+//line page.ego:65
+		if _, err := fmt.Fprintf(w, "<th align=\"left\">Size (k/v)"); err != nil {
+			return err
+		}
+//line page.ego:65
+		if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
+			return err
+		}
+//line page.ego:66
+		if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
+			return err
+		}
+//line page.ego:67
+		if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
+			return err
+		}
+//line page.ego:68
+		if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
+			return err
+		}
+//line page.ego:69
+		for i := uint16(0); i < p.count; i++ {
+//line page.ego:70
+			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
+				return err
+			}
+//line page.ego:70
+			e := p.leafPageElement(i)
+//line page.ego:71
+			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
+				return err
+			}
+//line page.ego:71
+			if (e.flags & bucketLeafFlag) != 0 {
+//line page.ego:72
+				if _, err := fmt.Fprintf(w, "\n              "); err != nil {
+					return err
+				}
+//line page.ego:72
+				b := ((*bucket)(unsafe.Pointer(&e.value()[0])))
+//line page.ego:73
+				if _, err := fmt.Fprintf(w, "\n              "); err != nil {
+					return err
+				}
+//line page.ego:73
+				if _, err := fmt.Fprintf(w, "<tr>\n                "); err != nil {
+					return err
+				}
+//line page.ego:74
+				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+					return err
+				}
+//line page.ego:74
+				if _, err := fmt.Fprintf(w, "<strong>"); err != nil {
+					return err
+				}
+//line page.ego:74
+				if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.key()), 40)); err != nil {
+					return err
+				}
+//line page.ego:74
+				if _, err := fmt.Fprintf(w, "</strong>"); err != nil {
+					return err
+				}
+//line page.ego:74
+				if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
+					return err
+				}
+//line page.ego:75
+				if _, err := fmt.Fprintf(w, "<td>\n                  &lt;bucket(root="); err != nil {
+					return err
+				}
+//line page.ego:76
+				if b.root != 0 {
+//line page.ego:76
+					if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
+						return err
+					}
+//line page.ego:76
+					if _, err := fmt.Fprintf(w, "%v", subpagelink(indexes, int(i))); err != nil {
+						return err
+					}
+//line page.ego:76
+					if _, err := fmt.Fprintf(w, "\">"); err != nil {
+						return err
+					}
+//line page.ego:76
+				}
+//line page.ego:76
+				if _, err := fmt.Fprintf(w, "%v", b.root); err != nil {
+					return err
+				}
+//line page.ego:76
+				if b.root != 0 {
+//line page.ego:76
+					if _, err := fmt.Fprintf(w, "</a>"); err != nil {
+						return err
+					}
+//line page.ego:76
+				}
+//line page.ego:76
+				if _, err := fmt.Fprintf(w, "; seq="); err != nil {
+					return err
+				}
+//line page.ego:76
+				if _, err := fmt.Fprintf(w, "%v", b.sequence); err != nil {
+					return err
+				}
+//line page.ego:76
+				if _, err := fmt.Fprintf(w, "&gt;\n                "); err != nil {
+					return err
+				}
+//line page.ego:77
+				if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
+					return err
+				}
+//line page.ego:78
+				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+					return err
+				}
+//line page.ego:78
+				if _, err := fmt.Fprintf(w, "%v", len(e.key())); err != nil {
+					return err
+				}
+//line page.ego:78
+				if _, err := fmt.Fprintf(w, " / "); err != nil {
+					return err
+				}
+//line page.ego:78
+				if _, err := fmt.Fprintf(w, "%v", len(e.value())); err != nil {
+					return err
+				}
+//line page.ego:78
+				if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
+					return err
+				}
 //line page.ego:79
+				if _, err := fmt.Fprintf(w, "</tr>\n            "); err != nil {
+					return err
+				}
+//line page.ego:80
+			} else {
+//line page.ego:81
+				if _, err := fmt.Fprintf(w, "\n              "); err != nil {
+					return err
+				}
+//line page.ego:81
+				if _, err := fmt.Fprintf(w, "<tr>\n                "); err != nil {
+					return err
+				}
+//line page.ego:82
+				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+					return err
+				}
+//line page.ego:82
+				if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.key()), 40)); err != nil {
+					return err
+				}
+//line page.ego:82
+				if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
+					return err
+				}
+//line page.ego:83
+				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+					return err
+				}
+//line page.ego:83
+				if _, err := fmt.Fprintf(w, "%v", trunc(tostr(e.value()), 40)); err != nil {
+					return err
+				}
+//line page.ego:83
+				if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
+					return err
+				}
+//line page.ego:84
+				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+					return err
+				}
+//line page.ego:84
+				if _, err := fmt.Fprintf(w, "%v", len(e.key())); err != nil {
+					return err
+				}
+//line page.ego:84
+				if _, err := fmt.Fprintf(w, " / "); err != nil {
+					return err
+				}
+//line page.ego:84
+				if _, err := fmt.Fprintf(w, "%v", len(e.value())); err != nil {
+					return err
+				}
+//line page.ego:84
+				if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
+					return err
+				}
+//line page.ego:85
+				if _, err := fmt.Fprintf(w, "</tr>\n            "); err != nil {
+					return err
+				}
+//line page.ego:86
+			}
+//line page.ego:87
+			if _, err := fmt.Fprintf(w, "\n          "); err != nil {
+				return err
+			}
+//line page.ego:87
+		}
+//line page.ego:88
+		if _, err := fmt.Fprintf(w, "\n        "); err != nil {
+			return err
+		}
+//line page.ego:88
+		if _, err := fmt.Fprintf(w, "</tbody>\n      "); err != nil {
+			return err
+		}
+//line page.ego:89
 		if _, err := fmt.Fprintf(w, "</table>\n    "); err != nil {
 			return err
 		}
-//line page.ego:80
+//line page.ego:90
 	}
-//line page.ego:81
+//line page.ego:91
 	if _, err := fmt.Fprintf(w, "\n  "); err != nil {
 		return err
 	}
-//line page.ego:81
+//line page.ego:91
 	if _, err := fmt.Fprintf(w, "</body>\n"); err != nil {
 		return err
 	}
-//line page.ego:82
+//line page.ego:92
 	if _, err := fmt.Fprintf(w, "</html>\n"); err != nil {
 		return err
 	}

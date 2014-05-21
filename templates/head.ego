@@ -17,7 +17,7 @@
     }
 
     th, td { 
-      min-width: 200px;
+      min-width: 100px;
       padding: 2px 5px;
     }
   </style>
