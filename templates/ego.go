@@ -5,6 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 	"io"
 	"path/filepath"
+	"unsafe"
 )
 
 //line bucket.ego:1
@@ -46,165 +47,235 @@ func Bucket(w io.Writer, tx *bolt.Tx, b *bolt.Bucket, keys [][]byte) error {
 		return err
 	}
 //line bucket.ego:13
-	if _, err := fmt.Fprintf(w, "<table class=\"table\">\n        "); err != nil {
+	if _, err := fmt.Fprintf(w, "<h2>\n        "); err != nil {
 		return err
 	}
 //line bucket.ego:14
-	if _, err := fmt.Fprintf(w, "<thead>\n          "); err != nil {
+	if _, err := fmt.Fprintf(w, "<a href=\"root\">root"); err != nil {
+		return err
+	}
+//line bucket.ego:14
+	if _, err := fmt.Fprintf(w, "</a>\n        "); err != nil {
 		return err
 	}
 //line bucket.ego:15
-	if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
-		return err
-	}
+	for i, key := range keys {
 //line bucket.ego:16
-	if _, err := fmt.Fprintf(w, "<th align=\"left\">Key"); err != nil {
-		return err
-	}
+		if _, err := fmt.Fprintf(w, "\n          / "); err != nil {
+			return err
+		}
 //line bucket.ego:16
-	if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
-		return err
-	}
+		if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
+			return err
+		}
+//line bucket.ego:16
+		if _, err := fmt.Fprintf(w, "%v", bucketlink(keys[:i+1])); err != nil {
+			return err
+		}
+//line bucket.ego:16
+		if _, err := fmt.Fprintf(w, "\">"); err != nil {
+			return err
+		}
+//line bucket.ego:16
+		if _, err := fmt.Fprintf(w, "%v", trunc(tostr(key), 40)); err != nil {
+			return err
+		}
+//line bucket.ego:16
+		if _, err := fmt.Fprintf(w, "</a>\n        "); err != nil {
+			return err
+		}
 //line bucket.ego:17
-	if _, err := fmt.Fprintf(w, "<th align=\"left\">Value"); err != nil {
-		return err
 	}
-//line bucket.ego:17
-	if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
+//line bucket.ego:18
+	if _, err := fmt.Fprintf(w, "\n      "); err != nil {
 		return err
 	}
 //line bucket.ego:18
-	if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
-		return err
-	}
-//line bucket.ego:19
-	if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
+	if _, err := fmt.Fprintf(w, "</h2>\n\n      "); err != nil {
 		return err
 	}
 //line bucket.ego:20
-	if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
+	if _, err := fmt.Fprintf(w, "<table class=\"table\">\n        "); err != nil {
 		return err
 	}
 //line bucket.ego:21
-	b.ForEach(func(k, v []byte) error {
+	if _, err := fmt.Fprintf(w, "<thead>\n          "); err != nil {
+		return err
+	}
 //line bucket.ego:22
+	if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
+		return err
+	}
+//line bucket.ego:23
+	if _, err := fmt.Fprintf(w, "<th align=\"left\">Key"); err != nil {
+		return err
+	}
+//line bucket.ego:23
+	if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
+		return err
+	}
+//line bucket.ego:24
+	if _, err := fmt.Fprintf(w, "<th align=\"left\">Value"); err != nil {
+		return err
+	}
+//line bucket.ego:24
+	if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
+		return err
+	}
+//line bucket.ego:25
+	if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
+		return err
+	}
+//line bucket.ego:26
+	if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
+		return err
+	}
+//line bucket.ego:27
+	if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
+		return err
+	}
+//line bucket.ego:28
+	b.ForEach(func(k, v []byte) error {
+//line bucket.ego:29
 		if _, err := fmt.Fprintf(w, "\n            "); err != nil {
 			return err
 		}
-//line bucket.ego:22
+//line bucket.ego:29
 		if _, err := fmt.Fprintf(w, "<tr>\n              "); err != nil {
 			return err
 		}
-//line bucket.ego:23
+//line bucket.ego:30
 		if v == nil {
-//line bucket.ego:24
+//line bucket.ego:31
 			if _, err := fmt.Fprintf(w, "\n                "); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:31
+			b := ((*bucket_)(unsafe.Pointer(b.Bucket(k)))).bucket
+//line bucket.ego:32
+			if _, err := fmt.Fprintf(w, "\n                "); err != nil {
+				return err
+			}
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "%v", subbucketlink(keys, k)); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "\">"); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "%v", trunc(tostr(k), 40)); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "</a>"); err != nil {
 				return err
 			}
-//line bucket.ego:24
+//line bucket.ego:32
 			if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
 				return err
 			}
-//line bucket.ego:25
-			if _, err := fmt.Fprintf(w, "<td>&lt;bucket&gt;"); err != nil {
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, "<td>&lt;bucket(root="); err != nil {
 				return err
 			}
-//line bucket.ego:25
-			if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, "%v", b.root); err != nil {
 				return err
 			}
-//line bucket.ego:26
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, "; seq="); err != nil {
+				return err
+			}
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, "%v", b.sequence); err != nil {
+				return err
+			}
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, ")&gt;"); err != nil {
+				return err
+			}
+//line bucket.ego:33
+			if _, err := fmt.Fprintf(w, "</td>\n\n              "); err != nil {
+				return err
+			}
+//line bucket.ego:35
 		} else {
-//line bucket.ego:27
+//line bucket.ego:36
 			if _, err := fmt.Fprintf(w, "\n                "); err != nil {
 				return err
 			}
-//line bucket.ego:27
+//line bucket.ego:36
 			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
 				return err
 			}
-//line bucket.ego:27
+//line bucket.ego:36
 			if _, err := fmt.Fprintf(w, "%v", trunc(tostr(k), 40)); err != nil {
 				return err
 			}
-//line bucket.ego:27
+//line bucket.ego:36
 			if _, err := fmt.Fprintf(w, "</td>\n                "); err != nil {
 				return err
 			}
-//line bucket.ego:28
+//line bucket.ego:37
 			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
 				return err
 			}
-//line bucket.ego:28
+//line bucket.ego:37
 			if _, err := fmt.Fprintf(w, "%v", trunc(tostr(v), 40)); err != nil {
 				return err
 			}
-//line bucket.ego:28
+//line bucket.ego:37
 			if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
 				return err
 			}
-//line bucket.ego:29
+//line bucket.ego:38
 		}
-//line bucket.ego:30
+//line bucket.ego:39
 		if _, err := fmt.Fprintf(w, "\n            "); err != nil {
 			return err
 		}
-//line bucket.ego:30
+//line bucket.ego:39
 		if _, err := fmt.Fprintf(w, "</tr>\n          "); err != nil {
 			return err
 		}
-//line bucket.ego:31
+//line bucket.ego:40
 		return nil
 	})
-//line bucket.ego:32
+//line bucket.ego:41
 	if _, err := fmt.Fprintf(w, "\n        "); err != nil {
 		return err
 	}
-//line bucket.ego:32
+//line bucket.ego:41
 	if _, err := fmt.Fprintf(w, "</tbody>\n      "); err != nil {
 		return err
 	}
-//line bucket.ego:33
+//line bucket.ego:42
 	if _, err := fmt.Fprintf(w, "</table>      \n    "); err != nil {
 		return err
 	}
-//line bucket.ego:34
+//line bucket.ego:43
 	if _, err := fmt.Fprintf(w, "</div> "); err != nil {
 		return err
 	}
-//line bucket.ego:34
+//line bucket.ego:43
 	if _, err := fmt.Fprintf(w, "<!-- /container -->\n  "); err != nil {
 		return err
 	}
-//line bucket.ego:35
+//line bucket.ego:44
 	if _, err := fmt.Fprintf(w, "</body>\n"); err != nil {
 		return err
 	}
-//line bucket.ego:36
+//line bucket.ego:45
 	if _, err := fmt.Fprintf(w, "</html>\n"); err != nil {
 		return err
 	}
@@ -344,127 +415,177 @@ func Index(w io.Writer, tx *bolt.Tx) error {
 		return err
 	}
 //line index.ego:4
-	if _, err := fmt.Fprintf(w, "\n\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "\n"); err != nil {
 		return err
 	}
 //line index.ego:5
-	if _, err := fmt.Fprintf(w, "<!DOCTYPE html>\n"); err != nil {
+	if _, err := fmt.Fprintf(w, "\n\n"); err != nil {
 		return err
 	}
 //line index.ego:6
-	if _, err := fmt.Fprintf(w, "<html lang=\"en\">\n  "); err != nil {
+	if _, err := fmt.Fprintf(w, "<!DOCTYPE html>\n"); err != nil {
 		return err
 	}
 //line index.ego:7
-	head(w, tx)
+	if _, err := fmt.Fprintf(w, "<html lang=\"en\">\n  "); err != nil {
+		return err
+	}
 //line index.ego:8
+	head(w, tx)
+//line index.ego:9
 	if _, err := fmt.Fprintf(w, "\n\n  "); err != nil {
 		return err
 	}
-//line index.ego:9
+//line index.ego:10
 	if _, err := fmt.Fprintf(w, "<body>\n    "); err != nil {
 		return err
 	}
-//line index.ego:10
-	nav(w, tx)
 //line index.ego:11
+	nav(w, tx)
+//line index.ego:12
 	if _, err := fmt.Fprintf(w, "\n\n    "); err != nil {
 		return err
 	}
-//line index.ego:12
-	if _, err := fmt.Fprintf(w, "<table>\n      "); err != nil {
+//line index.ego:13
+	if _, err := fmt.Fprintf(w, "<h2>root"); err != nil {
 		return err
 	}
 //line index.ego:13
-	if _, err := fmt.Fprintf(w, "<thead>\n        "); err != nil {
-		return err
-	}
-//line index.ego:14
-	if _, err := fmt.Fprintf(w, "<tr>\n          "); err != nil {
+	if _, err := fmt.Fprintf(w, "</h2>\n\n    "); err != nil {
 		return err
 	}
 //line index.ego:15
-	if _, err := fmt.Fprintf(w, "<th>Bucket Name"); err != nil {
-		return err
-	}
-//line index.ego:15
-	if _, err := fmt.Fprintf(w, "</th>\n        "); err != nil {
+	if _, err := fmt.Fprintf(w, "<table>\n      "); err != nil {
 		return err
 	}
 //line index.ego:16
-	if _, err := fmt.Fprintf(w, "</tr>\n      "); err != nil {
+	if _, err := fmt.Fprintf(w, "<thead>\n        "); err != nil {
 		return err
 	}
 //line index.ego:17
-	if _, err := fmt.Fprintf(w, "</thead>\n      "); err != nil {
+	if _, err := fmt.Fprintf(w, "<tr>\n          "); err != nil {
 		return err
 	}
 //line index.ego:18
-	if _, err := fmt.Fprintf(w, "<tbody>\n        "); err != nil {
+	if _, err := fmt.Fprintf(w, "<th align=\"left\">Key"); err != nil {
+		return err
+	}
+//line index.ego:18
+	if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
 		return err
 	}
 //line index.ego:19
-	tx.ForEach(func(name []byte, b *bolt.Bucket) error {
+	if _, err := fmt.Fprintf(w, "<th align=\"left\">Value"); err != nil {
+		return err
+	}
+//line index.ego:19
+	if _, err := fmt.Fprintf(w, "</th>\n        "); err != nil {
+		return err
+	}
 //line index.ego:20
+	if _, err := fmt.Fprintf(w, "</tr>\n      "); err != nil {
+		return err
+	}
+//line index.ego:21
+	if _, err := fmt.Fprintf(w, "</thead>\n      "); err != nil {
+		return err
+	}
+//line index.ego:22
+	if _, err := fmt.Fprintf(w, "<tbody>\n        "); err != nil {
+		return err
+	}
+//line index.ego:23
+	tx.ForEach(func(name []byte, b_ *bolt.Bucket) error {
+//line index.ego:24
 		if _, err := fmt.Fprintf(w, "\n          "); err != nil {
 			return err
 		}
-//line index.ego:20
+//line index.ego:24
+		b := ((*bucket_)(unsafe.Pointer(b_))).bucket
+//line index.ego:25
+		if _, err := fmt.Fprintf(w, "\n          "); err != nil {
+			return err
+		}
+//line index.ego:25
 		if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "<td>"); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "%v", bucketlink([][]byte{name})); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "\">"); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "%v", trunc(tostr(name), 40)); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
 		if _, err := fmt.Fprintf(w, "</a>"); err != nil {
 			return err
 		}
-//line index.ego:21
+//line index.ego:26
+		if _, err := fmt.Fprintf(w, "</td>\n            "); err != nil {
+			return err
+		}
+//line index.ego:27
+		if _, err := fmt.Fprintf(w, "<td>&lt;bucket(root="); err != nil {
+			return err
+		}
+//line index.ego:27
+		if _, err := fmt.Fprintf(w, "%v", b.root); err != nil {
+			return err
+		}
+//line index.ego:27
+		if _, err := fmt.Fprintf(w, "; seq="); err != nil {
+			return err
+		}
+//line index.ego:27
+		if _, err := fmt.Fprintf(w, "%v", b.sequence); err != nil {
+			return err
+		}
+//line index.ego:27
+		if _, err := fmt.Fprintf(w, ")&gt;"); err != nil {
+			return err
+		}
+//line index.ego:27
 		if _, err := fmt.Fprintf(w, "</td>\n          "); err != nil {
 			return err
 		}
-//line index.ego:22
+//line index.ego:28
 		if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
 			return err
 		}
-//line index.ego:23
+//line index.ego:29
 		return nil
 	})
-//line index.ego:24
+//line index.ego:30
 	if _, err := fmt.Fprintf(w, "\n      "); err != nil {
 		return err
 	}
-//line index.ego:24
+//line index.ego:30
 	if _, err := fmt.Fprintf(w, "</tbody>\n    "); err != nil {
 		return err
 	}
-//line index.ego:25
+//line index.ego:31
 	if _, err := fmt.Fprintf(w, "</table>      \n  "); err != nil {
 		return err
 	}
-//line index.ego:26
+//line index.ego:32
 	if _, err := fmt.Fprintf(w, "</body>\n"); err != nil {
 		return err
 	}
-//line index.ego:27
+//line index.ego:33
 	if _, err := fmt.Fprintf(w, "</html>\n"); err != nil {
 		return err
 	}

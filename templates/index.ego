@@ -1,5 +1,6 @@
 <%! func Index(w io.Writer, tx *bolt.Tx) error %>
 
+<%% import "unsafe" %%>
 <%% import "github.com/boltdb/bolt" %%>
 
 <!DOCTYPE html>
@@ -9,16 +10,21 @@
   <body>
     <% nav(w, tx) %>
 
+    <h2>root</h2>
+
     <table>
       <thead>
         <tr>
-          <th>Bucket Name</th>
+          <th align="left">Key</th>
+          <th align="left">Value</th>
         </tr>
       </thead>
       <tbody>
-        <% tx.ForEach(func(name []byte, b *bolt.Bucket) error { %>
+        <% tx.ForEach(func(name []byte, b_ *bolt.Bucket) error { %>
+          <% b := ((*bucket_)(unsafe.Pointer(b_))).bucket %>
           <tr>
             <td><a href="<%= bucketlink([][]byte{name}) %>"><%= trunc(tostr(name), 40) %></a></td>
+            <td>&lt;bucket(root=<%= b.root %>; seq=<%= b.sequence %>)&gt;</td>
           </tr>
         <% return nil; }) %>
       </tbody>

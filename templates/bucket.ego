@@ -10,6 +10,13 @@
     <div class="container">
       <% nav(w, tx) %>
 
+      <h2>
+        <a href="root">root</a>
+        <% for i, key := range keys { %>
+          / <a href="<%= bucketlink(keys[:i+1]) %>"><%= trunc(tostr(key), 40) %></a>
+        <% } %>
+      </h2>
+
       <table class="table">
         <thead>
           <tr>
@@ -21,8 +28,10 @@
           <% b.ForEach(func(k, v []byte) error { %>
             <tr>
               <% if v == nil { %>
+                <% b := ((*bucket_)(unsafe.Pointer(b.Bucket(k)))).bucket %>
                 <td><a href="<%= subbucketlink(keys, k) %>"><%= trunc(tostr(k), 40) %></a></td>
-                <td>&lt;bucket&gt;</td>
+                <td>&lt;bucket(root=<%= b.root %>; seq=<%= b.sequence %>)&gt;</td>
+
               <% } else { %>
                 <td><%= trunc(tostr(k), 40) %></td>
                 <td><%= trunc(tostr(v), 40) %></td>

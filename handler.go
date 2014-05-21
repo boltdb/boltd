@@ -20,6 +20,7 @@ func NewHandler(db *bolt.DB) http.Handler {
 	h := &handler{db}
 	r := mux.NewRouter()
 	r.HandleFunc("/", h.index)
+	r.HandleFunc("/root", h.index)
 	r.HandleFunc("/bucket", h.bucket)
 	return r
 }
