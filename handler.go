@@ -28,12 +28,19 @@ func (h *handler) index(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) page(w http.ResponseWriter, r *http.Request) {
 	err := h.db.View(func(tx *bolt.Tx) error {
-		// Extract the indexes.
+		// Use the direct page id, if available.
+		if r.FormValue("id") != "" {
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			return templates.Page(w, tx, nil, id)
+		}
+
+		// Otherwise extract the indexes and traverse.
 		indexes, err := indexes(r)
 		if err != nil {
 			return err
 		}
-		return templates.Page(w, tx, indexes)
+
+		return templates.Page(w, tx, indexes, 0)
 	})
 	if err != nil {
 		templates.Error(w, err)
