@@ -36,7 +36,7 @@ func main() {
 	http.Handle("/", boltd.NewHandler(db))
 
 	// Start the HTTP server.
-	go func() { http.ListenAndServe(*addr, nil) }()
+	go func() { log.Fatal(http.ListenAndServe(*addr, nil)) }()
 
 	fmt.Printf("Listening on http://localhost%s\n", *addr)
 	select {}
