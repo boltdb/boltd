@@ -1,14 +1,22 @@
-<%! func Page(w io.Writer, tx *bolt.Tx, indexes []int) error %>
+<%! func Page(w io.Writer, tx *bolt.Tx, indexes []int, directID int) error %>
 
 <%% import "unsafe" %%>
 <%% import "github.com/boltdb/bolt" %%>
 
 <%
-ids, err := pgids(tx, indexes)
-if err != nil {
-  return err
+var ids []pgid
+var p *page
+
+if directID == 0 {
+  var err error
+  ids, err = pgids(tx, indexes)
+  if err != nil {
+    return err
+  }
+  p = pageAt(tx, ids[len(ids)-1])
+} else {
+  p = pageAt(tx, pgid(directID))
 }
-p := pageAt(tx, ids[len(ids)-1])
 %>
 
 <!DOCTYPE html>
@@ -87,5 +95,11 @@ p := pageAt(tx, ids[len(ids)-1])
         </tbody>
       </table>
     <% } %>
+
+    <br/><br/>
+    <form action="page" method="GET">
+      Go to page: <input type="text" name="id"/>
+      <button type="submit">Go</button>
+    </form>
   </body>
 </html>
