@@ -40,12 +40,12 @@ stats := p.stats(tx.DB().Info().PageSize)
 
     <h3>Page Information</h3>
     <p>
-      <strong>ID:</strong> <%= p.id %><br/>
+      <strong>ID:</strong> <%= comma(int(p.id)) %><br/>
       <strong>Type:</strong> <%= fmt.Sprintf("%s (%x)", p.typ(), p.flags) %><br/>
       <strong>Overflow:</strong> <%= p.overflow %><br/><br/>
 
-      <strong>Alloc:</strong> <%= stats.alloc %><br/>
-      <strong>In Use:</strong> <%= stats.inuse %><br/>
+      <strong>Alloc:</strong> <%= comma(stats.alloc) %><br/>
+      <strong>In Use:</strong> <%= comma(stats.inuse) %><br/>
       <strong>Utilization:</strong> <%= fmt.Sprintf("%.2f%%", stats.utilization*100) %><br/>
     </p>
 

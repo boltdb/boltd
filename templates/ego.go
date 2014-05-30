@@ -346,7 +346,7 @@ func Page(w io.Writer, tx *bolt.Tx, indexes []int, directID int) error {
 		return err
 	}
 //line page.ego:44
-	if _, err := fmt.Fprintf(w, "%v", p.id); err != nil {
+	if _, err := fmt.Fprintf(w, "%v", comma(int(p.id))); err != nil {
 		return err
 	}
 //line page.ego:44
@@ -398,7 +398,7 @@ func Page(w io.Writer, tx *bolt.Tx, indexes []int, directID int) error {
 		return err
 	}
 //line page.ego:48
-	if _, err := fmt.Fprintf(w, "%v", stats.alloc); err != nil {
+	if _, err := fmt.Fprintf(w, "%v", comma(stats.alloc)); err != nil {
 		return err
 	}
 //line page.ego:48
@@ -414,7 +414,7 @@ func Page(w io.Writer, tx *bolt.Tx, indexes []int, directID int) error {
 		return err
 	}
 //line page.ego:49
-	if _, err := fmt.Fprintf(w, "%v", stats.inuse); err != nil {
+	if _, err := fmt.Fprintf(w, "%v", comma(stats.inuse)); err != nil {
 		return err
 	}
 //line page.ego:49
