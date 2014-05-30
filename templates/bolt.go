@@ -37,6 +37,12 @@ type page struct {
 	ptr      uintptr
 }
 
+type pageStats struct {
+	inuse       int
+	alloc       int
+	utilization float64
+}
+
 // typ returns a human readable page type string used for debugging.
 func (p *page) typ() string {
 	if (p.flags & branchPageFlag) != 0 {
@@ -62,6 +68,36 @@ func (p *page) leafPageElement(index uint16) *leafPageElement {
 
 func (p *page) branchPageElement(index uint16) *branchPageElement {
 	return &((*[maxNodesPerPage]branchPageElement)(unsafe.Pointer(&p.ptr)))[index]
+}
+
+func (p *page) stats(pageSize int) pageStats {
+	var s pageStats
+	s.alloc = (int(p.overflow) + 1) * pageSize
+
+	if (p.flags & leafPageFlag) != 0 {
+		s.inuse = pageHeaderSize
+		if p.count > 0 {
+			s.inuse += leafPageElementSize * int(p.count-1)
+			e := p.leafPageElement(p.count - 1)
+			s.inuse += int(e.pos + e.ksize + e.vsize)
+		}
+
+	} else if (p.flags & branchPageFlag) != 0 {
+		s.inuse = pageHeaderSize
+		if p.count > 0 {
+			s.inuse += branchPageElementSize * int(p.count-1)
+			e := p.branchPageElement(p.count - 1)
+			s.inuse += int(e.pos + e.ksize)
+		}
+
+	}
+
+	// Calculate space utilitization
+	if s.alloc > 0 {
+		s.utilization = float64(s.inuse) / float64(s.alloc)
+	}
+
+	return s
 }
 
 // branchPageElement represents a node on a branch page.
