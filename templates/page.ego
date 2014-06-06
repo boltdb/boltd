@@ -11,7 +11,9 @@ if err != nil {
   return err
 }
 
-stats := p.stats(tx.DB().Info().PageSize)
+// Generate page stats.
+pageSize := tx.DB().Info().PageSize
+stats := p.stats(pageSize)
 
 // Generate histogram of all nested page usage.
 var histogram map[int]int
@@ -53,15 +55,19 @@ if showUsage {
             <th align="left">Key</th>
             <th align="left">Page ID</th>
             <th align="left">Size (k)</th>
+            <th align="center">%%Util</th>
           </tr>
         </thead>
         <tbody>
           <% for i := uint16(0); i < p.count; i++ { %>
             <% e := p.branchPageElement(i) %>
+            <% subpage := pageAt(tx, e.pgid) %>
+            <% substats := subpage.stats(pageSize) %>
             <tr>
               <td><%= trunc(tostr(e.key()), 40) %></td>
               <td><a href="<%= subpagelink(indexes, int(i)) %>"><%= e.pgid %></a></td>
               <td><%= len(e.key()) %></td>
+              <td align="right"><%= fmt.Sprintf("%.2f%%", substats.utilization*100) %></td>
             </tr>
           <% } %>
         </tbody>
@@ -75,6 +81,7 @@ if showUsage {
             <th align="left">Key</th>
             <th align="left">Value</th>
             <th align="left">Size (k/v)</th>
+            <th align="center">%%Util</th>
           </tr>
         </thead>
         <tbody>
@@ -82,18 +89,27 @@ if showUsage {
             <% e := p.leafPageElement(i) %>
             <% if (e.flags & bucketLeafFlag) != 0 { %>
               <% b := ((*bucket)(unsafe.Pointer(&e.value()[0]))) %>
+              <%
+                util := "-"
+                if b.root != 0 {
+                  substats := pageAt(tx, b.root).stats(pageSize)
+                  util = fmt.Sprintf("%.2f%%", substats.utilization*100)
+                }
+              %>
               <tr>
                 <td><strong><%= trunc(tostr(e.key()), 40) %></strong></td>
                 <td>
                   &lt;bucket(root=<% if b.root != 0 { %><a href="<%= subpagelink(indexes, int(i)) %>"><% } %><%= b.root %><% if b.root != 0 { %></a><% } %>; seq=<%= b.sequence %>&gt;
                 </td>
                 <td><%= len(e.key()) %> / <%= len(e.value()) %></td>
+                <td align="right"><%= util %></td>
               </tr>
             <% } else { %>
               <tr>
                 <td><%= trunc(tostr(e.key()), 40) %></td>
                 <td><%= trunc(tostr(e.value()), 40) %></td>
                 <td><%= len(e.key()) %> / <%= len(e.value()) %></td>
+                <td>&nbsp;</td>
               </tr>
             <% } %>
           <% } %>
