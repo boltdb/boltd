@@ -3,6 +3,7 @@ package templates
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -128,31 +129,53 @@ func bucketize(m map[int]int) (mins, maxs, values []int) {
 		}
 	}
 
-	// Determine min/max/count.
-	min, max := int(^uint(0)>>1), 0
-	count := 0
-	for k, _ := range m {
-		if k < min {
-			min = k
-		}
-		if k > max {
-			max = k
-		}
-		count++
+	// Retrieve sorted set of keys.
+	var keys []int
+	var vsum int
+	for k, v := range m {
+		keys = append(keys, k)
+		vsum += v
 	}
+	sort.Ints(keys)
+
+	// Determine min/max for 5-95 percentile.
+	var pmin, pmax, x int
+	for _, k := range keys {
+		v := m[k]
+
+		// Grab the min when we cross the 5% threshold and 95% threshold.
+		if (x*100)/vsum < 5 && ((x+v)*100)/vsum >= 5 {
+			pmin = k
+		}
+		if (x*100)/vsum < 95 && ((x+v)*100)/vsum >= 95 {
+			pmax = k
+		}
+
+		x += m[k]
+	}
+	min, max := keys[0], keys[len(keys)-1]
 
 	// Calculate number of buckets and step size.
-	n := int(math.Ceil(math.Sqrt(float64(count))))
-	step := float64(max-min) / float64(n)
+	n := int(math.Ceil(math.Sqrt(float64(vsum))))
+	step := float64(pmax-pmin) / float64(n)
 
 	// Bucket everything.
 	for i := 0; i < n; i++ {
-		kmin := int(math.Floor(float64(min) + step*float64(i)))
-		kmax := int(math.Floor(float64(min)+step*float64(i+1))) - 1
+		var kmin, kmax int
+		if i == 0 {
+			kmin = min
+		} else {
+			kmin = int(math.Floor(float64(pmin) + step*float64(i)))
+		}
+		if i == n-1 {
+			kmax = max
+		} else {
+			kmax = int(math.Floor(float64(pmin)+step*float64(i+1))) - 1
+		}
 		value := 0
 
 		for k, v := range m {
-			if k >= kmin && k <= kmax {
+			if (i == 0 || k >= kmin) && (i == (n-1) || k <= kmax) {
 				value += v
 			}
 		}
