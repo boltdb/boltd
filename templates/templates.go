@@ -118,6 +118,9 @@ func comma(v int) string {
 	return sign + strings.Join(parts[j:len(parts)], ",")
 }
 
+// maxHistogramN is the maximum number of buckets that can be used for the histogram.
+const maxHistogramN = 100
+
 // bucketize converts a map of observations into a histogram with a
 // smaller set of buckets using the square root choice method.
 func bucketize(m map[int]int) (mins, maxs, values []int) {
@@ -157,6 +160,9 @@ func bucketize(m map[int]int) (mins, maxs, values []int) {
 
 	// Calculate number of buckets and step size.
 	n := int(math.Ceil(math.Sqrt(float64(vsum))))
+	if n > maxHistogramN {
+		n = maxHistogramN
+	}
 	step := float64(pmax-pmin) / float64(n)
 
 	// Bucket everything.
