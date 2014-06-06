@@ -956,231 +956,225 @@ func Page(w io.Writer, r *http.Request, tx *bolt.Tx, indexes []int, directID int
 			return err
 		}
 //line page.ego:124
-		var kmax, vmax int
-		maxlen := 20
-		for k, v := range histogram {
-			if k > kmax {
-				kmax = k
-			}
+		mins, maxs, values := bucketize(histogram)
+		vmax, maxlen := 0, 20
+		for _, v := range values {
 			if v > vmax {
 				vmax = v
 			}
 		}
+		fmt.Println("vmax", vmax)
 
-//line page.ego:136
+//line page.ego:134
 		if _, err := fmt.Fprintf(w, "\n\n      "); err != nil {
 			return err
 		}
-//line page.ego:137
+//line page.ego:135
 		if _, err := fmt.Fprintf(w, "<h3>Page Usage Histogram"); err != nil {
 			return err
 		}
-//line page.ego:137
+//line page.ego:135
 		if _, err := fmt.Fprintf(w, "</h3>\n      "); err != nil {
 			return err
 		}
-//line page.ego:138
+//line page.ego:136
 		if _, err := fmt.Fprintf(w, "<table>\n        "); err != nil {
 			return err
 		}
-//line page.ego:139
+//line page.ego:137
 		if _, err := fmt.Fprintf(w, "<thead>\n          "); err != nil {
 			return err
 		}
-//line page.ego:140
+//line page.ego:138
 		if _, err := fmt.Fprintf(w, "<tr>\n            "); err != nil {
 			return err
 		}
-//line page.ego:141
+//line page.ego:139
 		if _, err := fmt.Fprintf(w, "<th align=\"left\">Usage (bytes)"); err != nil {
 			return err
 		}
-//line page.ego:141
+//line page.ego:139
 		if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
 			return err
 		}
-//line page.ego:142
+//line page.ego:140
 		if _, err := fmt.Fprintf(w, "<th align=\"left\">Count"); err != nil {
 			return err
 		}
-//line page.ego:142
+//line page.ego:140
 		if _, err := fmt.Fprintf(w, "</th>\n            "); err != nil {
 			return err
 		}
-//line page.ego:143
+//line page.ego:141
 		if _, err := fmt.Fprintf(w, "<th>&nbsp;"); err != nil {
 			return err
 		}
-//line page.ego:143
+//line page.ego:141
 		if _, err := fmt.Fprintf(w, "</th>\n          "); err != nil {
 			return err
 		}
-//line page.ego:144
+//line page.ego:142
 		if _, err := fmt.Fprintf(w, "</tr>\n        "); err != nil {
 			return err
 		}
-//line page.ego:145
+//line page.ego:143
 		if _, err := fmt.Fprintf(w, "</thead>\n        "); err != nil {
 			return err
 		}
-//line page.ego:146
+//line page.ego:144
 		if _, err := fmt.Fprintf(w, "<tbody>\n          "); err != nil {
 			return err
 		}
-//line page.ego:147
-		for i := 0; i <= kmax; i++ {
-//line page.ego:148
+//line page.ego:145
+		for i := 0; i < len(values); i++ {
+//line page.ego:146
 			if _, err := fmt.Fprintf(w, "\n            "); err != nil {
 				return err
 			}
-//line page.ego:148
-			if histogram[i] > 0 {
-//line page.ego:148
-				if _, err := fmt.Fprintf(w, " \n              "); err != nil {
-					return err
-				}
-//line page.ego:149
-				if _, err := fmt.Fprintf(w, "<tr>\n                "); err != nil {
-					return err
-				}
-//line page.ego:150
-				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-					return err
-				}
-//line page.ego:150
-				if _, err := fmt.Fprintf(w, "%v", i); err != nil {
-					return err
-				}
-//line page.ego:150
-				if _, err := fmt.Fprintf(w, "</th>\n                "); err != nil {
-					return err
-				}
-//line page.ego:151
-				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-					return err
-				}
-//line page.ego:151
-				if _, err := fmt.Fprintf(w, "%v", histogram[i]); err != nil {
-					return err
-				}
-//line page.ego:151
-				if _, err := fmt.Fprintf(w, "</th>\n                "); err != nil {
-					return err
-				}
-//line page.ego:152
-				if _, err := fmt.Fprintf(w, "<td>"); err != nil {
-					return err
-				}
-//line page.ego:152
-				if _, err := fmt.Fprintf(w, "%v", strings.Repeat("█", int((float64(histogram[i])/float64(vmax))*float64(maxlen)))); err != nil {
-					return err
-				}
-//line page.ego:152
-				if _, err := fmt.Fprintf(w, "</td>\n              "); err != nil {
-					return err
-				}
-//line page.ego:153
-				if _, err := fmt.Fprintf(w, "</tr>\n            "); err != nil {
-					return err
-				}
-//line page.ego:154
-			}
-//line page.ego:155
-			if _, err := fmt.Fprintf(w, "\n          "); err != nil {
+//line page.ego:146
+			if _, err := fmt.Fprintf(w, "<tr>\n              "); err != nil {
 				return err
 			}
-//line page.ego:155
+//line page.ego:147
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:147
+			if _, err := fmt.Fprintf(w, "%v", mins[i]); err != nil {
+				return err
+			}
+//line page.ego:147
+			if _, err := fmt.Fprintf(w, " - "); err != nil {
+				return err
+			}
+//line page.ego:147
+			if _, err := fmt.Fprintf(w, "%v", maxs[i]); err != nil {
+				return err
+			}
+//line page.ego:147
+			if _, err := fmt.Fprintf(w, "</th>\n              "); err != nil {
+				return err
+			}
+//line page.ego:148
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:148
+			if _, err := fmt.Fprintf(w, "%v", values[i]); err != nil {
+				return err
+			}
+//line page.ego:148
+			if _, err := fmt.Fprintf(w, "</th>\n              "); err != nil {
+				return err
+			}
+//line page.ego:149
+			if _, err := fmt.Fprintf(w, "<td>"); err != nil {
+				return err
+			}
+//line page.ego:149
+			if _, err := fmt.Fprintf(w, "%v", strings.Repeat("█", int((float64(values[i])/float64(vmax))*float64(maxlen)))); err != nil {
+				return err
+			}
+//line page.ego:149
+			if _, err := fmt.Fprintf(w, "</td>\n            "); err != nil {
+				return err
+			}
+//line page.ego:150
+			if _, err := fmt.Fprintf(w, "</tr>\n          "); err != nil {
+				return err
+			}
+//line page.ego:151
 		}
-//line page.ego:156
+//line page.ego:152
 		if _, err := fmt.Fprintf(w, "\n        "); err != nil {
 			return err
 		}
-//line page.ego:156
+//line page.ego:152
 		if _, err := fmt.Fprintf(w, "</tbody>\n      "); err != nil {
 			return err
 		}
-//line page.ego:157
+//line page.ego:153
 		if _, err := fmt.Fprintf(w, "</table>\n    "); err != nil {
 			return err
 		}
-//line page.ego:158
+//line page.ego:154
 	} else {
-//line page.ego:159
+//line page.ego:155
 		if _, err := fmt.Fprintf(w, "\n      "); err != nil {
 			return err
 		}
-//line page.ego:160
+//line page.ego:156
 		u, q := r.URL, r.URL.Query()
 		q.Set("usage", "true")
 		u.RawQuery = q.Encode()
 
-//line page.ego:165
+//line page.ego:161
 		if _, err := fmt.Fprintf(w, "\n\n      "); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "<p>"); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "<a href=\""); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "%v", u.String()); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "\">Show Page Usage"); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "</a>"); err != nil {
 			return err
 		}
-//line page.ego:166
+//line page.ego:162
 		if _, err := fmt.Fprintf(w, "</p>\n    "); err != nil {
 			return err
 		}
-//line page.ego:167
+//line page.ego:163
 	}
-//line page.ego:168
+//line page.ego:164
 	if _, err := fmt.Fprintf(w, "\n\n    "); err != nil {
 		return err
 	}
-//line page.ego:169
+//line page.ego:165
 	if _, err := fmt.Fprintf(w, "<br/>"); err != nil {
 		return err
 	}
-//line page.ego:169
+//line page.ego:165
 	if _, err := fmt.Fprintf(w, "<br/>\n    "); err != nil {
 		return err
 	}
-//line page.ego:170
+//line page.ego:166
 	if _, err := fmt.Fprintf(w, "<form action=\"page\" method=\"GET\">\n      Go to page: "); err != nil {
 		return err
 	}
-//line page.ego:171
+//line page.ego:167
 	if _, err := fmt.Fprintf(w, "<input type=\"text\" name=\"id\"/>\n      "); err != nil {
 		return err
 	}
-//line page.ego:172
+//line page.ego:168
 	if _, err := fmt.Fprintf(w, "<button type=\"submit\">Go"); err != nil {
 		return err
 	}
-//line page.ego:172
+//line page.ego:168
 	if _, err := fmt.Fprintf(w, "</button>\n    "); err != nil {
 		return err
 	}
-//line page.ego:173
+//line page.ego:169
 	if _, err := fmt.Fprintf(w, "</form>\n  "); err != nil {
 		return err
 	}
-//line page.ego:174
+//line page.ego:170
 	if _, err := fmt.Fprintf(w, "</body>\n"); err != nil {
 		return err
 	}
-//line page.ego:175
+//line page.ego:171
 	if _, err := fmt.Fprintf(w, "</html>\n"); err != nil {
 		return err
 	}

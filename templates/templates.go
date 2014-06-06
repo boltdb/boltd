@@ -2,6 +2,7 @@ package templates
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"unicode"
@@ -114,4 +115,52 @@ func comma(v int) string {
 	}
 	parts[j] = strconv.Itoa(int(v))
 	return sign + strings.Join(parts[j:len(parts)], ",")
+}
+
+// bucketize converts a map of observations into a histogram with a
+// smaller set of buckets using the square root choice method.
+func bucketize(m map[int]int) (mins, maxs, values []int) {
+	if len(m) == 0 {
+		return nil, nil, nil
+	} else if len(m) == 1 {
+		for k, v := range m {
+			return []int{k}, []int{k}, []int{v}
+		}
+	}
+
+	// Determine min/max/count.
+	min, max := int(^uint(0)>>1), 0
+	count := 0
+	for k, _ := range m {
+		if k < min {
+			min = k
+		}
+		if k > max {
+			max = k
+		}
+		count++
+	}
+
+	// Calculate number of buckets and step size.
+	n := int(math.Ceil(math.Sqrt(float64(count))))
+	step := float64(max-min) / float64(n)
+
+	// Bucket everything.
+	for i := 0; i < n; i++ {
+		kmin := int(math.Floor(float64(min) + step*float64(i)))
+		kmax := int(math.Floor(float64(min)+step*float64(i+1))) - 1
+		value := 0
+
+		for k, v := range m {
+			if k >= kmin && k <= kmax {
+				value += v
+			}
+		}
+
+		mins = append(mins, kmin)
+		maxs = append(maxs, kmax)
+		values = append(values, value)
+	}
+
+	return
 }

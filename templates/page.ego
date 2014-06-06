@@ -119,12 +119,9 @@ if showUsage {
 
     <% if showUsage { %>
       <%
-        var kmax, vmax int
-        maxlen := 20
-        for k, v := range histogram {
-          if k > kmax {
-            kmax = k
-          }
+        mins, maxs, values := bucketize(histogram)
+        vmax, maxlen := 0, 20
+        for _, v := range values {
           if v > vmax {
             vmax = v
           }
@@ -141,14 +138,12 @@ if showUsage {
           </tr>
         </thead>
         <tbody>
-          <% for i := 0; i <= kmax; i++ { %>
-            <% if histogram[i] > 0 { %> 
-              <tr>
-                <td><%= i %></th>
-                <td><%= histogram[i] %></th>
-                <td><%= strings.Repeat("█", int((float64(histogram[i])/float64(vmax))*float64(maxlen))) %></td>
-              </tr>
-            <% } %>
+          <% for i := 0; i < len(values); i++ { %>
+            <tr>
+              <td><%= mins[i] %> - <%= maxs[i] %></th>
+              <td><%= values[i] %></th>
+              <td><%= strings.Repeat("█", int((float64(values[i])/float64(vmax))*float64(maxlen))) %></td>
+            </tr>
           <% } %>
         </tbody>
       </table>
