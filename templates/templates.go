@@ -75,12 +75,6 @@ func pgids(t *bolt.Tx, indexes []int) ([]pgid, error) {
 	return ids, nil
 }
 
-// retrieves the page from a given transaction.
-func pageAt(tx *bolt.Tx, id pgid) *page {
-	info := tx.DB().Info()
-	return (*page)(unsafe.Pointer(&info.Data[info.PageSize*int(id)]))
-}
-
 func pagelink(indexes []int) string {
 	var a []string
 	for _, index := range indexes[1:] {

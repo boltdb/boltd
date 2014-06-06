@@ -1,27 +1,23 @@
-<%! func Page(w io.Writer, tx *bolt.Tx, indexes []int, directID int) error %>
+<%! func Page(w io.Writer, r *http.Request, tx *bolt.Tx, indexes []int, directID int, showUsage bool) error %>
 
+<%% import "net/http" %%>
+<%% import "strings" %%>
 <%% import "unsafe" %%>
 <%% import "github.com/boltdb/bolt" %%>
 
 <%
-var ids []pgid
-var p *page
-
-// Find the page by page id or by indexes.
-if directID == 0 {
-  var err error
-  ids, err = pgids(tx, indexes)
-  if err != nil {
-    return err
-  }
-  p = pageAt(tx, ids[len(ids)-1])
-} else {
-  p = pageAt(tx, pgid(directID))
+p, ids, err := find(tx, directID, indexes)
+if err != nil {
+  return err
 }
 
-// Calculate stats.
 stats := p.stats(tx.DB().Info().PageSize)
 
+// Generate histogram of all nested page usage.
+var histogram map[int]int
+if showUsage {
+  histogram = usage(tx, p.id)
+}
 %>
 
 <!DOCTYPE html>
@@ -103,6 +99,51 @@ stats := p.stats(tx.DB().Info().PageSize)
           <% } %>
         </tbody>
       </table>
+    <% } %>
+
+    <% if showUsage { %>
+      <%
+        var kmax, vmax int
+        maxlen := 20
+        for k, v := range histogram {
+          if k > kmax {
+            kmax = k
+          }
+          if v > vmax {
+            vmax = v
+          }
+        }
+      %>
+
+      <h3>Page Usage Histogram</h3>
+      <table>
+        <thead>
+          <tr>
+            <th align="left">Usage (bytes)</th>
+            <th align="left">Count</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for i := 0; i <= kmax; i++ { %>
+            <% if histogram[i] > 0 { %> 
+              <tr>
+                <td><%= i %></th>
+                <td><%= histogram[i] %></th>
+                <td><%= strings.Repeat("█", int((float64(histogram[i])/float64(vmax))*float64(maxlen))) %></td>
+              </tr>
+            <% } %>
+          <% } %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <%
+      u, q := r.URL, r.URL.Query()
+      q.Set("usage", "true")
+      u.RawQuery = q.Encode()
+      %>
+
+      <p><a href="<%= u.String() %>">Show Page Usage</a></p>
     <% } %>
 
     <br/><br/>
