@@ -203,7 +203,7 @@ func find(tx *bolt.Tx, directID int, indexes []int) (*page, []pgid, error) {
 // retrieves the page from a given transaction.
 func pageAt(tx *bolt.Tx, id pgid) *page {
 	info := tx.DB().Info()
-	return (*page)(unsafe.Pointer(&info.Data[info.PageSize*int(id)]))
+	return (*page)(unsafe.Pointer(info.Data + uintptr(info.PageSize*int(id))))
 }
 
 // forEachPage recursively iterates over all pages starting at a given page.
