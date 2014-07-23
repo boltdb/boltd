@@ -2,12 +2,13 @@ package templates
 
 import (
 	"fmt"
-	"github.com/boltdb/bolt"
 	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"unsafe"
+
+	"github.com/boltdb/bolt"
 )
 
 //line error.ego:1
