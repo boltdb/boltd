@@ -99,7 +99,7 @@ if showUsage {
               <tr>
                 <td><strong><%= trunc(tostr(e.key()), 40) %></strong></td>
                 <td>
-                  &lt;bucket(root=<% if b.root != 0 { %><a href="<%= subpagelink(indexes, int(i)) %>"><% } %><%= b.root %><% if b.root != 0 { %></a><% } %>; seq=<%= b.sequence %>&gt;
+                  &lt;bucket(root=<% if b.root != 0 { %><a href="<%= subpagelink(indexes, int(i)) %>"><% } %><%= b.root %><% if b.root != 0 { %></a><% } %>; seq=<%= b.sequence %>)&gt;
                 </td>
                 <td><%= len(e.key()) %> / <%= len(e.value()) %></td>
                 <td align="right"><%= util %></td>
