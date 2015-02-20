@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Open the database.
-	db, err := bolt.Open(path, 0600)
+	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
