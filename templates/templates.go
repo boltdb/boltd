@@ -32,9 +32,10 @@ func tostr(b []byte) string {
 	return s
 }
 
+// trunc string by runes length
 func trunc(s string, n int) string {
-	if len(s) > n {
-		return s[:n] + "..."
+	if runes := []rune(s); len(runes) > n {
+		s = string(runes[:n]) + "..."
 	}
 	return s
 }
